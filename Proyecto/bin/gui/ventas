@@ -1,0 +1,244 @@
+package gui;
+
+import java.awt.EventQueue;
+
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.JTextField;
+import javax.swing.JScrollBar;
+import javax.swing.JTextArea;
+import javax.swing.JButton;
+import javax.swing.DefaultComboBoxModel;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.event.InternalFrameListener;
+
+import utils.constants;
+
+import javax.swing.event.InternalFrameEvent;
+
+public class Vender extends JInternalFrame implements ActionListener, InternalFrameListener {
+	private JLabel lblModelo;
+	private JLabel lblPrecio;
+	private JLabel lblCantidad;
+	private JComboBox cboModelo;
+	private JTextField txtPrecio;
+	private JTextField txtCantidad;
+	private JScrollBar scrollBar;
+	private JTextArea txtS;
+	private JButton btnVender;
+	private JButton btnCerrar;
+	
+	public static String ven;
+
+	
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					//Vender frame = new Vender();
+					//frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public Vender() {
+		addInternalFrameListener(this);
+		ven="ven";
+		setTitle("Ventas");
+		setMaximizable(true);
+		setIconifiable(true);
+		setClosable(true);
+		setBounds(100, 100, 450, 300);
+		getContentPane().setLayout(null);
+		
+		lblModelo = new JLabel("Modelo");
+		lblModelo.setBounds(20, 21, 45, 13);
+		getContentPane().add(lblModelo);
+		
+		lblPrecio = new JLabel("Precio(S/.)");
+		lblPrecio.setBounds(20, 44, 66, 13);
+		getContentPane().add(lblPrecio);
+		
+		lblCantidad = new JLabel("Cantidad");
+		lblCantidad.setBounds(20, 67, 45, 13);
+		getContentPane().add(lblCantidad);
+		
+		cboModelo = new JComboBox();
+		cboModelo.addActionListener(this);
+		cboModelo.setModel(new DefaultComboBoxModel(new String[] {"Cinza Plus", "Luxury", "Austria", "Yungay MIx", "Thal\u00EDa"}));
+		cboModelo.setBounds(79, 17, 95, 21);
+		getContentPane().add(cboModelo);
+		
+		txtPrecio = new JTextField();
+		txtPrecio.setEditable(false);
+		txtPrecio.setBounds(79, 40, 95, 21);
+		getContentPane().add(txtPrecio);
+		txtPrecio.setColumns(10);
+		
+		txtCantidad = new JTextField();
+		txtCantidad.setColumns(10);
+		txtCantidad.setBounds(79, 63, 95, 21);
+		getContentPane().add(txtCantidad);
+		
+		scrollBar = new JScrollBar();
+		scrollBar.setBounds(20, 96, 381, 146);
+		getContentPane().add(scrollBar);
+		
+		txtS = new JTextArea();
+		txtS.setBounds(20, 96, 381, 146);
+		getContentPane().add(txtS);
+		
+		btnVender = new JButton("Vender");
+		btnVender.addActionListener(this);
+		btnVender.setBounds(292, 11, 136, 33);
+		getContentPane().add(btnVender);
+		
+		btnCerrar = new JButton("Cerrar");
+		btnCerrar.addActionListener(this);
+		btnCerrar.setBounds(292, 47, 136, 33);
+		getContentPane().add(btnCerrar);
+		
+
+ 	}
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == cboModelo) {
+			actionPerformedCboModelo(e);
+		}
+		if (e.getSource() == btnCerrar) {
+			actionPerformedBtnCerrar(e);
+		}
+		if (e.getSource() == btnVender) {
+			actionPerformedBtnVender(e);
+		}
+	}
+	String tobs;
+	int obs1,obs2,obs3,obs4;
+	double porcentaje1,porcentaje2,porcentaje3,porcentaje4;
+	protected void actionPerformedBtnVender(ActionEvent e) {
+		int mod,can;
+		double icom,ipag,ides = 0 ;
+		mod=leerModelo();
+		can=leerCantidad();
+		mostrarDatos(can);
+		mod = leerModelo( );
+		mostrarDatos(mod);
+		icom=CalcularImporteCompra(mod,can);
+		ides=CalcularImporteDescuento(can,icom,ides);
+		ipag=CalcularImportePagar();
+		tobs=obsequio();
+		mostrarResultados(icom);
+		
+	}
+	
+	int leerCantidad() {
+		return Integer.parseInt(txtCantidad.getText());
+	}
+	double CalcularImporteCompra(int m, int c) {
+		switch (m) {
+		case 0 :return 92.56*c;
+		case 1: return 42.77*c;
+		case 2:return 52.45*c;
+		case 3: return 55.89*c;
+		default: return 45*c;
+		}
+	}
+	double CalcularImporteDescuento (int c,double ic,double id){
+	if (c > 5) return id=constants.porcentaje1 * ic;
+	 else if (c > 10) return id=constants.porcentaje2*ic;
+	 else if (c > 15) return id=constants.porcentaje3*ic;
+	 if (c<15) return id=constants.porcentaje4*ic;
+	return id;
+	 }
+	double CalcularImportePagar() {
+		return ipag=icom-ides;
+	}
+	 
+	String obsequio() {
+		if(c>5) constants.tipoObsequio=constants.obsequioCantidad1*c;
+		else if (c<6) constants.tipoObsequio=constants.obsequioCantidad2*c;
+		else if (c>10) constants.tipoObsequio=constants.obsequioCantidad3*c;
+	}
+	
+	
+	
+	void mostrarResultados (double ic) {
+		txtS.setText("");
+		txtS.append("Importe de Compra"+ic);
+		txtS.append ("Importe de Descuento"+id+"/n");
+	
+	
+	}
+  protected void actionPerformedBtnCerrar(ActionEvent e) {
+		dispose();
+		ven=null;
+	}
+	public void internalFrameActivated(InternalFrameEvent e) {
+	}
+	public void internalFrameClosed(InternalFrameEvent e) {
+	}
+	public void internalFrameClosing(InternalFrameEvent e) {
+		if (e.getSource() == this) {
+			internalFrameClosingThis(e);
+		}
+	}
+	public void internalFrameDeactivated(InternalFrameEvent e) {
+		
+		
+	}
+	public void internalFrameDeiconified(InternalFrameEvent e) {
+	}
+	public void internalFrameIconified(InternalFrameEvent e) {
+	}
+	public void internalFrameOpened(InternalFrameEvent e) {
+	}
+	protected void internalFrameClosingThis(InternalFrameEvent e) {
+		dispose();
+		ven=null;
+	}
+	protected void actionPerformedCboModelo(ActionEvent e) {
+		int m;
+		m = leerModelo( );
+		mostrarDatos(m);
+		
+	}
+	int leerModelo( ) {
+		return cboModelo.getSelectedIndex();
+	}
+
+	void mostrarDatos(int m) {
+
+    	switch(m) {
+    	case 0:
+    		txtPrecio.setText(String.valueOf(constants.precio0));break;
+    	    
+    		
+        case 1:
+    	    
+    		txtPrecio.setText(String.valueOf(constants.precio1));break;
+         
+        case 2:
+
+            txtPrecio.setText(String.valueOf(constants.precio2));break;
+            
+        case 3:
+        	txtPrecio.setText(String.valueOf(constants.precio3));break;
+            
+        default:
+        	txtPrecio.setText(String.valueOf(constants.precio4));
+            	}
+           	 }
+
+
+	}
+
